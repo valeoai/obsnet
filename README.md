@@ -1,6 +1,8 @@
 # Triggering Failures: Out-Of-Distribution detection by learning from local adversarial attacks in Semantic Segmentation
 Victor Besnier, Andrei Bursuc, David Picard & Alexandre Briot
+
 International Conference on Computer Vision (ICCV) 2021
+
 ## Abstract
 In this paper, we tackle the detection of out-of-distribution(OOD) objects in semantic segmentation. By analyzing the literature,
 we found that current methods are either accurate or fast but not both which limits their usability in real world applications.
