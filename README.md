@@ -21,21 +21,21 @@ We show that our method is fast, accurate and memory efficient on three differen
     |    ├── Dataset/                               <- loading  data
     |    |      ├── BDD_anomaly.py                  <- BDDAnomaly dataset     
     |    |      ├── camvid.py                       <- CamVid dataset     
-    |    |      ├── load_data.py                    <- dataloarder   
+    |    |      ├── load_data.py                    <- dataloader   
     |    |      ├── seg_transfo.py                  <- adapt pytorch data augmentation for segmentation     
     |    |      └── street_hazard.py                <- StreetHazards Dataset 
     |    |
     |    ├── Utils/                                 <- useful fct
     |    |      ├── adv_attack.py                   <- fct adversarial attacks      
-    |    |      ├── affichage.py                    <- fct for plot viridis & uncertainty map       
+    |    |      ├── affichage.py                    <- fct for plot viridis & segmentation map       
     |    |      ├── loss.py                         <- focal loss      
     |    |      ├── metrics.py                      <- metrics for evaluation     
-    |    |      └── utils.py                        <- useful function
-    |    |
+    |    |      └── utils.py                        <- useful functions
+    |    ├── ckpt/                                  <- models ckpt
+    |    ├── logs/                                  <- tensorboard logs
     |    ├── train.py                               <- training the observer
-    |    ├── evaluation.py                          <- test and evaluation obsnet
+    |    ├── evaluation.py                          <- test and evaluation
     |    ├── README.md                              <- me :) 
-    |    ├── run.sh                                 <- bash  
     |    └── main.py                                <- main
 
 
