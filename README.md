@@ -5,7 +5,7 @@ In Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV
 In this paper, we propose a new method, named Observer Network, for OOD and error detection for semantic segmentation. 
 We separate the segmentation and the error prediction by using a dedicated network to the later task, keeping the segmentation network unchanged.
 We trigger failures of the Segmentation Network by applying Local Adversarial Attacks (LAA) on the input image during training. These images serve as proxy OOD to train the observer.  
-We show that our method is fast, accurate and memory efficient on three different datasets and compare against multiple baselines, paper/code available at: https://github.com
+We show that our method is fast, accurate and memory efficient on three different datasets and compare against multiple baselines.
 
 ## Observer Architecture
 ![Alt text](img/teaser.png "Observer architecture")
