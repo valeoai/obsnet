@@ -1,5 +1,6 @@
 # Triggering Failures: Out-Of-Distribution detection by learning from local adversarial attacks in Semantic Segmentation
-Victor Besnier, Andrei Bursuc, David Picard & Alexandre Briot
+Victor Besnier, Andrei Bursuc, David Picard & Alexandre Briot 
+
 In Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) 2021
 
 ## Observer Architecture
@@ -121,12 +122,12 @@ To test:
     python main.py --dset_folder "<path to dataset>" --segnet_file "<path to pretrain segnet>" --obsnet_file "./ckpt/bdd/" --data "BddAnomaly" --tboard "./logs/bdd" --num_workers <nb workers> --nclass 19 --test_only --test_multi "obsnet,mcp,mc_dropout" 
         
 ## Citation
-If you find this repository usefull, please consider citing:
+If you find this repository usefull, please consider citing our [paper](https://arxiv.org/abs/2108.01634):
 
-@incollection{besnier2021trigger,
-   title = {Triggering Failures: Out-Of-Distribution detection by learning from local adversarial attacks in Semantic Segmentation},
-   author = {Besnier, Victor and Bursuc, Andrei and Picard, David and Briot Alexandre},
-   booktitle = {Proceedings of the IEEE International Conference on Computer Vision},
-   year = {2021}
-   url= {https://arxiv.org/abs/2108.01634}
-}
+    @incollection{besnier2021trigger,
+       title = {Triggering Failures: Out-Of-Distribution detection by learning from local adversarial attacks in Semantic Segmentation},
+       author = {Besnier, Victor and Bursuc, Andrei and Picard, David and Briot Alexandre},
+       booktitle = {Proceedings of the IEEE International Conference on Computer Vision},
+       year = {2021}
+       url= {https://arxiv.org/abs/2108.01634}
+    }
