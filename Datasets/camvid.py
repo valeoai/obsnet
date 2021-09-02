@@ -1,3 +1,4 @@
+import os
 import torch
 from torch.utils.data import DataLoader
 from PIL import Image
@@ -31,7 +32,7 @@ class CamVid(torch.utils.data.Dataset):
         super(CamVid, self).__init__()
         self.imgFolder = imgFolder
         self.split = split
-        with open(imgFolder+split+".txt") as f:
+        with open(os.path.join(imgFolder, split+".txt")) as f:
             self.img_set = np.array([l.split() for l in f.readlines()])
         self.x = self.img_set[:, 0]
         self.y = self.img_set[:, 1]

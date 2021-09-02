@@ -3,8 +3,15 @@ Victor Besnier, Andrei Bursuc, David Picard & Alexandre Briot
 
 In Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) 2021
 
-## Observer Architecture
-![Alt text](img/teaser.png "Observer architecture")
+[Our paper](https://arxiv.org/abs/2108.01634)
+
+## TL;DR
+We present a new anomaly detection method for road semantic segmentation based on an observer network trained on the failure mode of the target network
+![Alt text](img/archi.png "Observer architecture")
+
+Segmentation Prediction | Observer Uncertainty
+--- | ---
+![Alt text](img/view1.gif) | ![Alt text](img/view2.gif)
 
 ## Abstract
 In this paper, we propose a new method, named Observer Network, for OOD and error detection for semantic segmentation. 
@@ -49,10 +56,17 @@ We show that our method is fast, accurate and memory efficient on three differen
 ### Datasets
 
 #### CamVid
-Dataset can be download here: http://mi.eng.cam.ac.uk/research/projects/VideoRec/CamVid/
+CamVid Dataset can be download here: http://mi.eng.cam.ac.uk/research/projects/VideoRec/CamVid/
 
-We will release soon the OOD split here:  
-   
+CamVid OOD test split is the same image than CamVid test set but with random animales add in each frame. 
+This split can be find here: soon. Once it is downloaded, execute the following line in your shell:
+    
+    $ mv -r /path/to/Dataset/CamVid_OOD/test_ood/ /path/to/Dataset/Camvid/
+    $ mv -r /path/to/Dataset/CamVid_OOD/test_ood.txt /path/to/Dataset/Camvid/
+    $ mv -r /path/to/Dataset/CamVid_OOD/testannot_ood/ /path/to/Dataset/Camvid/
+    
+Folder Structure:
+
     ├ CamVid/
     |    ├ test/
     |    ├ testannot/
@@ -78,6 +92,8 @@ To test:
 #### StreetHazards
 Dataset can be download here: https://github.com/hendrycks/anomaly-seg
 
+Folder Structure:
+
     ├ StreetHazards
     |    ├ annotations/
     |    |    ├ test/
@@ -102,6 +118,8 @@ To test:
 
 #### BDD Anomaly
 Dataset can be download here: https://github.com/hendrycks/anomaly-seg
+
+Folder Structure:
 
     ├ BDD
     |    ├ bdd100k

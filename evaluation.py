@@ -113,9 +113,9 @@ def evaluate(epoch, obsnet, segnet, loader, split, writer, args):
                     uncertainty_map = torch.cat((obsnet_uncertainty, sm_uncertainty, label), dim=0)
                     uncertainty_map = make_grid(uncertainty_map, normalize=False)
 
-                    writer.add_image("Image/" + split + "/segmentation_map",
+                    writer.add_image(split + "/segmentation_map",
                                      plot(images, segnet_feat[-1], target.view(bsize, -1), args=args), epoch)
-                    writer.add_image("Image/" + split + "/uncertainty_map", uncertainty_map, epoch)
+                    writer.add_image(split + "/uncertainty_map", uncertainty_map, epoch)
 
         if "odin" in args.test_multi:                     # output of ODIN
             odin = odin_estimation(segnet, images, bsize, args)
@@ -135,6 +135,7 @@ def evaluate(epoch, obsnet, segnet, loader, split, writer, args):
     avg_loss /= len(loader)
     obsnet_acc = 100 * (obsnet_acc / nb_sample)
     segnet_acc = 100 * (segnet_acc / nb_sample)
+    writer.add_scalars('data/' + split + 'Loss', {"loss": avg_loss}, epoch)
 
     print(f"\rEpoch Summary: {split} Avg loss: {avg_loss:.4f}, "
           f"ObsNet acc: {obsnet_acc:.2f}, "
