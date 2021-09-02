@@ -58,11 +58,14 @@ We show that our method is fast, accurate and memory efficient on three differen
 #### CamVid
 CamVid Dataset can be download here: http://mi.eng.cam.ac.uk/research/projects/VideoRec/CamVid/
 
-The CamvidOOD dataset is composed of the same number of images as the classic CamVid. However, each image of the testing set contains an out-of-distribution animal. The link to download the dataset will be released soon. Once it is downloaded, execute the following line in your shell:
+The CamvidOOD dataset is composed of the same number of images as the classic CamVid. However, each image of the testing set contains an out-of-distribution animal.
+You can download the CamVidOOD split in the release "CamVid OOD". Once CamVid and CamVidOOD are downloaded, execute the following line in your shell:
     
-    $ mv -r /path/to/Dataset/CamVid_OOD/test_ood/ /path/to/Dataset/Camvid/
-    $ mv -r /path/to/Dataset/CamVid_OOD/test_ood.txt /path/to/Dataset/Camvid/
-    $ mv -r /path/to/Dataset/CamVid_OOD/testannot_ood/ /path/to/Dataset/Camvid/
+    $ cd /path/where/you/download/camvidood/
+    $ unzip CamVidOOD.zip
+    $ mv -r /path/where/you/download/CamVidOOD/test_ood/ /path/to/dataset/CamVid/
+    $ mv -r /path/where/you/download/CamVidOOD/test_ood.txt /path/to/dataset/CamVid/
+    $ mv -r /path/where/you/download/CamVidOOD/testannot_ood/ /path/to/dataset/CamVid/
     
 Folder Structure:
 
