@@ -58,8 +58,7 @@ We show that our method is fast, accurate and memory efficient on three differen
 #### CamVid
 CamVid Dataset can be download here: http://mi.eng.cam.ac.uk/research/projects/VideoRec/CamVid/
 
-CamVid OOD test split is the same image than CamVid test set but with random animales add in each frame. 
-This split can be find here: soon. Once it is downloaded, execute the following line in your shell:
+The CamvidOOD dataset is composed of the same number of images as the classic CamVid. However, each image of the testing set contains an out-of-distribution animal. The link to download the dataset will be released soon. Once it is downloaded, execute the following line in your shell:
     
     $ mv -r /path/to/Dataset/CamVid_OOD/test_ood/ /path/to/Dataset/Camvid/
     $ mv -r /path/to/Dataset/CamVid_OOD/test_ood.txt /path/to/Dataset/Camvid/
