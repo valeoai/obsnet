@@ -74,8 +74,8 @@ def training(epoch, obsnet, segnet, train_loader, optimizer, writer, args):
                 uncertainty_map = make_grid(uncertainty_map, normalize=False)
                 segmentation_map = plot(images + (10 * mask), segnet_feat[-1], target, args)
 
-            writer.add_image("Image/Train/segmentation", segmentation_map, epoch)
-            writer.add_image("Image/Train/uncertainty", uncertainty_map, epoch)
+            writer.add_image("Train/segmentation", segmentation_map, epoch)
+            writer.add_image("Train/uncertainty", uncertainty_map, epoch)
 
     avg_loss /= len(train_loader)
 

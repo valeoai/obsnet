@@ -31,7 +31,10 @@ def main(args):
 
     # Load Networks
     obsnet, segnet = net_loader(args)
-    optimizer = torch.optim.SGD(obsnet.parameters(), lr=args.lr)
+    if args.optim == "SGD":
+        optimizer = torch.optim.SGD(obsnet.parameters(), lr=args.lr)
+    elif args.optim == "AdamW":
+        optimizer = torch.optim.AdamW(obsnet.parameters(), lr=args.lr)
     sched = scheduler.MultiStepLR(optimizer, milestones=[args.epoch // 2, args.epoch-5], gamma=0.2)
 
     if args.test_only:
@@ -68,10 +71,11 @@ if __name__ == '__main__':
     parser.add_argument("--obsnet_file",   type=str,   default="",       help="path to obsnet")
     parser.add_argument("--data",          type=str,   default="",       help="CamVid|StreetHazard|BddAnomaly")
     parser.add_argument("--tboard",        type=str,   default="",       help="path to tensorboeard log")
+    parser.add_argument("--model",         type=str,   default="segnet", help="Segnet|Deeplabv3")
+    parser.add_argument("--optim",         type=str,   default="SGD",    help="type of optimizer SGD|AdamW")
     parser.add_argument("--T",             type=int,   default=50,       help="number of forward pass for ensemble")
     parser.add_argument("--seed",          type=int,   default=-1,       help="seed, if -1 no seed is use")
     parser.add_argument("--bsize",         type=int,   default=8,        help="batch size")
-    parser.add_argument('--nclass',        type=int,   default=12,       help="number of classes")
     parser.add_argument("--lr",            type=float, default=2e-2,     help="learning rate of obsnet")
     parser.add_argument("--Temp",          type=float, default=1.2,      help="temperature scaling ratio")
     parser.add_argument("--noise",         type=float, default=0.,       help="noise injection in the img data")
@@ -101,6 +105,7 @@ if __name__ == '__main__':
         args.patch_size = [128, 128, 60, 80]
         args.mean = [0.4108, 0.4240, 0.4316]
         args.std = [0.3066, 0.3111, 0.3068]
+        args.nclass = 12
     elif args.data == "StreetHazard":
         args.size = [720, 1280]
         args.crop = (150, 250)
@@ -109,14 +114,36 @@ if __name__ == '__main__':
         args.patch_size = [300, 360, 160, 200]
         args.mean = [0.3301, 0.3457, 0.3728]
         args.std = [0.1773, 0.1767, 0.1900]
+        args.nclass = 14
     elif args.data == "BddAnomaly":
-        args.size = [720, 1280]
-        args.crop = (150, 250)
+        args.size = [360, 640]  # Original size [720, 1280]
+        args.crop = (80, 150)
         args.pos_weight = torch.tensor([3]).to(args.device)
         args.criterion = nn.BCEWithLogitsLoss(pos_weight=args.pos_weight)
         args.patch_size = [300, 360, 160, 200]
         args.mean = [0.3698, 0.4145, 0.4247]
         args.std = [0.2525, 0.2695, 0.2870]
+        args.nclass = 19
+    elif args.data == "CEA":
+        args.size = [600, 960]  # Original size [800, 1280]
+        args.crop = (150, 250)
+        args.pos_weight = torch.tensor([3]).to(args.device)
+        args.criterion = nn.BCEWithLogitsLoss(pos_weight=args.pos_weight)
+        args.patch_size = [300, 360, 160, 200]
+        args.mean = [0.3307, 0.3650, 0.3722]
+        args.std = [0.4279, 0.4612, 0.5387]
+        args.nclass = 12
+    elif args.data == "WoodScape":
+        args.size = [725, 960]  # Original size [966, 1280]
+        args.crop = (150, 250)
+        args.pos_weight = torch.tensor([3]).to(args.device)
+        args.criterion = nn.BCEWithLogitsLoss(pos_weight=args.pos_weight)
+        args.patch_size = [300, 360, 160, 200]
+        args.mean = [0.3213, 0.3335, 0.3400]
+        args.std = [0.1368, 0.1376, 0.1419]
+        args.nclass = 10
+    else:
+        raise NameError("Dataset not understand")
 
     args.one = torch.FloatTensor([1.]).to(args.device)
     args.zero = torch.FloatTensor([0.]).to(args.device)

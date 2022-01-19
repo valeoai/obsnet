@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# python main.py --dset_folder "/datasets_master/CamVid" --segnet_file "/root/local_storage/save_net/SegNet/CamVid.pth" --obsnet_file "/root/local_storage/save_net/SOTA/Obsnet_CamVid.pth" --data "CamVid" --tboard "./logs/CamVid" --num_workers 32 --bsize 3 --adv "min_random_patch" --epsilon 0.005 --lr 0.2 --nclass 12 --test_multi "obsnet" --test_only --epoch 25
+python main.py --dset_folder "/datasets_master/WoodScape/data" --segnet_file "/root/local_storage/save_net/DeepLab_v3plus/WoodScape.pth" --obsnet_file "./ckpt/WoodScape" --data "WoodScape" --tboard "./logs/WS" --num_workers 32 --bsize 2 --adv "min_random_patch" --epsilon 0.005 --model "deeplabv3plus" --lr 0.001 --optim "AdamW" --test_multi "obsnet,mcp" --epoch 25

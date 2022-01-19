@@ -1,4 +1,3 @@
-#### Borrowed from https://github.com/valeoai/ConfidNet/blob/master/confidnet/models/segnet.py ####
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import models

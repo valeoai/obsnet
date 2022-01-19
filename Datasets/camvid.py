@@ -42,8 +42,8 @@ class CamVid(torch.utils.data.Dataset):
         return len(self.img_set)
 
     def __getitem__(self, id):
-        filex = self.imgFolder + self.x[id]
-        filey = self.imgFolder + self.y[id]
+        filex = os.path.join(self.imgFolder, self.x[id])
+        filey = os.path.join(self.imgFolder, self.y[id])
 
         imgx = Image.open(filex)
         imgy = Image.open(filey)

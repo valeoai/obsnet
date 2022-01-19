@@ -63,9 +63,9 @@ You can download the CamVidOOD split in the release "CamVid OOD". Once CamVid an
     
     $ cd /path/where/you/download/camvidood/
     $ unzip CamVidOOD.zip
-    $ mv -r /path/where/you/download/CamVidOOD/test_ood/ /path/to/dataset/CamVid/
-    $ mv -r /path/where/you/download/CamVidOOD/test_ood.txt /path/to/dataset/CamVid/
-    $ mv -r /path/where/you/download/CamVidOOD/testannot_ood/ /path/to/dataset/CamVid/
+    $ mv -r /path/where/you/download/camvidood/test_ood/ /path/to/dataset/CamVid/
+    $ mv -r /path/where/you/download/camvidood/test_ood.txt /path/to/dataset/CamVid/
+    $ mv -r /path/where/you/download/camvidood/testannot_ood/ /path/to/dataset/CamVid/
     
 Folder Structure:
 
