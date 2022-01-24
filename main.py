@@ -88,6 +88,7 @@ if __name__ == '__main__':
     parser.add_argument("--test_multi",    type=str,   default="obsnet", help="test all baseline, split by comma")
     parser.add_argument("--drop",          action='store_true',          help="activate dropout in segnet")
     parser.add_argument("--no_img",        action='store_true',          help="use image for obsnet")
+    parser.add_argument("--resume",        action='store_true',          help="restart the training")
     parser.add_argument("--obs_mlp",       action='store_true',          help="use a smaller archi for obsnet")
     parser.add_argument("--test_only",     action='store_true',          help="evaluate methods")
     parser.add_argument("--no_residual",   action='store_true',          help="remove residual connection for obsnet")

@@ -27,8 +27,10 @@ def net_loader(args):
     segnet.load_state_dict(torch.load(args.segnet_file))
     segnet.eval()
 
-    if args.test_only and "obsnet" in args.test_multi:
+    if args.test_only or args.resume:
         obsnet.load_state_dict(torch.load(os.path.join(args.obsnet_file, "best.pth")))
+
+    if args.test_only:
         obsnet.eval()
 
     if not args.test_only:

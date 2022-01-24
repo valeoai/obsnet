@@ -82,6 +82,7 @@ def compute_score(tab, args):
         ace_score    -> Adaptive Calibration Error
         ece_score    -> Expected Calibration Error
     """
+
     tab = tab[tab[:, 0].argsort()]
     tab = tab.to(args.device)
 
@@ -110,7 +111,7 @@ def compute_score(tab, args):
     auroc = np.trapz(TPR, FPR)
     fpr_at_95tpr = FPR_AT_95_TPR(TPR, FPR)
     ace_score = ace(tab.cpu(), 15)
-
+    
     return [aupr_success, aupr_error, auroc, fpr_at_95tpr, ace_score]
 
 
