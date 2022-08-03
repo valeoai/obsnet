@@ -154,7 +154,7 @@ Example:
 
     python inference.py --img_folder "<path to image folder>" --segnet_file "path to segnet" --obsnet_file "path to obsnet" --data "CityScapes" --model "raod_anomaly"    
 
-## Road Anomaly Segmentation 
+## Road Anomaly Segmentation (SegmentMeIfYouCan)
 
 | Model name                | OoD Data           | AUPR (&uarr;) | FPR95TPR (&darr;) | sIoU gt (&uarr;) | PPV (&uarr;) | mean F1 (&uarr;) |
 | --------------------------|------------------- | ------------- | ----------------- | ---------------- | ------------ | ---------------- |
