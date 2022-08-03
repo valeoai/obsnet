@@ -5,6 +5,8 @@ from Models.segnet import SegNet
 from Models.obsnet import Obsnet_Seg, Obsnet_Small
 from Models.deeplab_v3plus import deeplab_v3plus
 
+from Models.road_anomaly_networks.deepv3 import DeepWV3Plus, DeepWV3Plus_Obsnet
+
 
 def net_loader(args):
     """ load the observer network and the segmentation network """
@@ -21,6 +23,11 @@ def net_loader(args):
                                 pretrained_backbone=True).to(args.device)
         obsnet = deeplab_v3plus('resnet101', num_classes=args.nclass, output_stride=16,
                                 pretrained_backbone=True, obsnet=True).to(args.device)
+
+    elif args.model == "road_anomaly":
+        segnet = DeepWV3Plus(args.nclass).to(args.device)
+        obsnet = DeepWV3Plus_Obsnet(num_classes=1).to(args.device)
+
     else:
         raise NameError("Model not known")
 
@@ -38,4 +45,3 @@ def net_loader(args):
         obsnet = nn.DataParallel(obsnet)
 
     return obsnet, segnet
-

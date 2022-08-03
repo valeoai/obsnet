@@ -4,6 +4,7 @@ import torch.nn.functional as F
 from skimage.draw import random_shapes
 
 from Utils.utils import transform_output
+from Datasets.load_data import data_loader
 
 
 def add_shape(args):
@@ -123,6 +124,35 @@ def generate_mask_random_patch(images, args):
     return mask.view(bsize, 1, width, height).expand_as(images)
 
 
+def generate_mask_fractal(images, args):
+    """ Generate a mask to attack a fractal shape on the images
+        images -> Tensor: (b,c,w,h) the batch of images
+        args   -> Argparse: global arguments
+    return:
+        mask -> the mask where to perform the attack """
+    bsize, channel, width, height = images.size()
+    mask = torch.zeros(bsize, 3, width, height).to(args.device)
+
+    try:
+        fractal = next(args.fractal)
+    except StopIteration:
+        args.fractal = iter(data_loader("Fractal", args))
+        fractal = next(args.fractal, None)
+    fractal = fractal.to(args.device)
+
+    for i in range(len(mask)):
+        x = random.randint(50, width - args.patch_size[0])
+        y = random.randint(0, height - args.patch_size[1])
+        h = args.patch_size[1]
+        w = args.patch_size[0]
+        patch = torch.where(fractal[i].unsqueeze(0) > 0, args.one, args.zero).to(args.device)
+        mask[i, :, x:x + w, y:y + h] = patch
+        # texture[i] += images[i, :, x:x + w, y:y + h].mean() - texture.mean() - 0.2
+        # images[i, :] = torch.where(mask[i, :] > 0, texture[i, :], images[i, :])
+
+    return mask, images
+
+
 def select_attack(images, target, segnet, args):
     """ Select the right attack given args.adv """
     if args.adv.startswith("min_"):
@@ -150,6 +180,9 @@ def select_attack(images, target, segnet, args):
             mask = generate_mask_square_patch(images, args)
         elif args.adv.endswith("random_patch"):
             mask = generate_mask_random_patch(images, args)
+        return fgsm_attack(images, target, segnet, mask, "max", args)
+    elif args.adv == "fractal":
+        mask, images = generate_mask_fractal(images, args)
         return fgsm_attack(images, target, segnet, mask, "max", args)
     else:
         raise NameError('Unknown attacks, please check args.adv arguments')

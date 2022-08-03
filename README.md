@@ -9,9 +9,6 @@ In Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV
 We present a new anomaly detection method for road semantic segmentation based on an observer network trained on the failure mode of the target network
 ![Alt text](img/archi.png "Observer architecture")
 
-Segmentation Prediction | Observer Uncertainty
---- | ---
-![Alt text](img/view1.gif) | ![Alt text](img/view2.gif)
 
 ## Abstract
 In this paper, we propose a new method, named Observer Network, for OOD and error detection for semantic segmentation. 
@@ -22,13 +19,19 @@ We show that our method is fast, accurate and memory efficient on three differen
 ##  Repository Structure
     ├ Obsnet/
     |    ├── Models/                                <- networks
+    |    |      ├── road_anomaly_networks/          <- networks from SegmentMeIfYouCan
     |    |      ├── load_net.py
+    |    |      ├── deeplab_v3plus.py
+    |    |      ├── resnet.py
     |    |      ├── obsnet.py
     |    |      └── segnet.py  
     |    |    
     |    ├── Dataset/                               <- loading  data
     |    |      ├── BDD_anomaly.py                  <- BDDAnomaly dataset     
     |    |      ├── camvid.py                       <- CamVid dataset     
+    |    |      ├── cityscapes.py                   <- CityScapes dataset     
+    |    |      ├── woodscapes.py                   <- WoodScape dataset     
+    |    |      ├── cea.py                          <- CEA dataset     
     |    |      ├── load_data.py                    <- dataloader   
     |    |      ├── seg_transfo.py                  <- adapt pytorch data augmentation for segmentation     
     |    |      └── street_hazard.py                <- StreetHazards Dataset 
@@ -41,21 +44,23 @@ We show that our method is fast, accurate and memory efficient on three differen
     |    |      └── utils.py                        <- useful functions
     |    ├── ckpt/                                  <- models ckpt
     |    ├── logs/                                  <- tensorboard logs
+    |    ├── img/                                   <- img for Teaser
     |    ├── train.py                               <- training the observer
     |    ├── evaluation.py                          <- test and evaluation
+    |    ├── inference.py                           <- perform inference on custom images
     |    ├── README.md                              <- me :) 
     |    └── main.py                                <- main
 
-### Usage
+## Usage
     
     $ git clone https://github.com/valeoai/obsnet
     $ cd obsnet 
     $ conda env create --file requirements.yml  
     $ conda activate obsnet
       
-### Datasets
+## Datasets
 
-#### CamVid
+### CamVid
 CamVid Dataset can be download here: http://mi.eng.cam.ac.uk/research/projects/VideoRec/CamVid/
 
 The CamvidOOD dataset is composed of the same number of images as the classic CamVid. However, each image of the testing set contains an out-of-distribution animal.
@@ -91,7 +96,7 @@ To test:
     
     python main.py --dset_folder "<path to dataset>" --segnet_file "<path to pretrain segnet>" --obsnet_file "./ckpt/camvid/" --data "CamVid" --tboard "./logs/camvid" --num_workers <nb workers> --nclass 12 --test_only --test_multi "obsnet,mcp,mc_dropout" 
 
-#### StreetHazards
+### StreetHazards
 Dataset can be download here: https://github.com/hendrycks/anomaly-seg
 
 Folder Structure:
@@ -118,7 +123,7 @@ To test:
     
     python main.py --dset_folder "<path to dataset>" --segnet_file "<path to pretrain segnet>" --obsnet_file "./ckpt/streethazards/" --data "StreetHazard" --tboard "./logs/bdd" --num_workers <nb workers> --nclass 14 --test_only --test_multi "obsnet,mcp,mc_dropout" 
 
-#### BDD Anomaly
+### BDD Anomaly
 Dataset can be download here: https://github.com/hendrycks/anomaly-seg
 
 Folder Structure:
@@ -141,6 +146,41 @@ To test:
     
     python main.py --dset_folder "<path to dataset>" --segnet_file "<path to pretrain segnet>" --obsnet_file "./ckpt/bdd/" --data "BddAnomaly" --tboard "./logs/bdd" --num_workers <nb workers> --nclass 19 --test_only --test_multi "obsnet,mcp,mc_dropout" 
         
+## Inference 
+
+You can perfom inference on a batch of images. 
+
+Example:
+
+    python inference.py --img_folder "<path to image folder>" --segnet_file "path to segnet" --obsnet_file "path to obsnet" --data "CityScapes" --model "raod_anomaly"    
+
+## Road Anomaly Segmentation 
+
+| Model name                | OoD Data           | AUPR     | FPR95TPR | sIoU gt | PPV     | mean F1 |
+| --------------------------|------------------- | -------- | ---------| ------- | ------- | ------- | 
+| ObsNet                    | :x:                |   75.44% | 26.69%   |  44.22% |  52.56% | 45.08%  |
+| DenseHybrid               | :heavy_check_mark: |   77.96% |  9.81%   |  54.17% |  24.13% | 31.08%  |
+| Maximized Entropy         | :heavy_check_mark: |   85.47% | 15.00%   |  49.21% |  39.51% | 28.72%  |
+| NFlowJS                   | :x:                |   56.92% | 34.71%   |  36.94% |  18.01% | 14.89%  |
+| JSRNet                    | :x:                |   33.64% | 43.85%   |  20.20% |  29.27% | 13.66%  |
+| Image Resynthesis         | :x:                |   52.28% | 25.93%   |  39.68% |  10.95% | 12.51%  |
+| SynBoost                  | :heavy_check_mark: |   56.44% | 61.86%   |  34.68% |  17.81% | 9.99%   |
+| Embedding Density         | :x:                |   37.52% | 70.76%   |  33.86% |  20.54% | 7.90%   |
+| Void Classifier           | :heavy_check_mark: |   36.61% | 63.49%   |  21.14% |  22.13% | 6.49%   |
+| Maximum Softmax           | :x:                |   27.97% | 72.05%   |  15.48% |  15.29% | 5.37%   |
+| ODIN                      | :x:                |   33.06% | 71.68%   |  19.53% |  17.88% | 5.15%   |
+| MC Dropout                | :x:                |   28.87% | 69.47%   |  20.49% |  17.26% | 4.26%   |
+| Ensemble                  | :x:                |   17.66% | 91.06%   |  16.44% |  20.77% | 3.39%   |
+| Mahalanobis               | :x:                |   20.04% | 86.99%   |  14.82% |  10.22% | 2.68%   |
+
+Sample of our results: 
+
+![Alt text](img/teaser_RA.gif)
+
+## Pretrained Models
+
+Pretrained model are available in this [google drive](https://drive.google.com/drive/folders/11S9oK-Bk9PoP2728ldrROQKAa8Q3iUxx?usp=sharing)
+
 ## Citation
 If you find this repository usefull, please consider citing our [paper](https://arxiv.org/abs/2108.01634):
 

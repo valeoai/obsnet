@@ -1,14 +1,18 @@
 import glob
 import time
+import argparse
+import numpy as np
+from PIL import Image
 
 import torch
-from PIL import Image
 from torchvision import transforms
 import torchvision.transforms.functional as tf
-import numpy as np
+
 from Models.segnet import SegNet
 from Models.obsnet import Obsnet_Seg as ObsNet
 from Models.deeplab_v3plus import deeplab_v3plus
+from Models.road_anomaly_networks.deepv3 import DeepWV3Plus, DeepWV3Plus_Obsnet
+
 
 def img2tensor(file, args):
     img = Image.open(file)
@@ -31,6 +35,12 @@ def test(args):
         obsnet = deeplab_v3plus('resnet101', num_classes=args.nclass, output_stride=16,
                                 pretrained_backbone=True, obsnet=True).to(args.device)
 
+    elif args.model == "road_anomaly":
+        segnet = DeepWV3Plus(args.nclass).to(args.device)
+        obsnet = DeepWV3Plus_Obsnet(num_classes=1).to(args.device)
+    else:
+        raise NameError("type of model not understood")
+
     segnet.load_state_dict(torch.load(args.segnet_file))
     segnet.eval()
 
@@ -44,20 +54,28 @@ def test(args):
 
             # Inference
             start = time.time()
-            seg_pred, obs_pred = _inference(img, segnet, obsnet)
+            _seg_pred, _obs_pred = _inference(img, segnet, obsnet)
             total_time += time.time() - start
             img = (img - img.min()) / (img.max() - img.min())
+
             # Post processing
-            seg_pred = torch.argmax(seg_pred, dim=1)
-            seg_pred = Image.fromarray(seg_pred[0].byte().cpu().numpy()).resize((args.w, args.h))
+            _seg_pred = torch.argmax(_seg_pred, dim=1)
+            seg_pred = Image.fromarray(_seg_pred[0].byte().cpu().numpy()).resize((args.w, args.h))
             seg_pred.putpalette(args.colors.astype("uint8"))
             seg_pred = Image.blend(transforms.ToPILImage()(img[0]), seg_pred.convert("RGB"), alpha=0.5)
 
-            obs_pred = (obs_pred - obs_pred.min()) / (obs_pred.max() - obs_pred.min())
+            _obs_pred = torch.sigmoid(_obs_pred)
+            _obs_pred = (_obs_pred - _obs_pred.min()) / (_obs_pred.max() - _obs_pred.min())
+            obs_pred = torch.zeros_like(_obs_pred)
+
+            # highlight uncertainty for predicted instance
+            for c in args.stuff_classes:
+                mask = torch.where(_seg_pred[0] == c, args.one, args.zero)
+                obs_pred += mask * _obs_pred
+            obs_pred += 0.01 * _obs_pred
+            obs_pred = torch.clamp(obs_pred, 0, 0.99)
             obs_pred = obs_pred * args.yellow + (1 - obs_pred) * args.blue
-            # obs_pred = F.interpolate(obs_pred, (args.h//50, args.w//50))
-            # obs_pred = torch.where(obs_pred < 0.2, args.zero, obs_pred)
-            # obs_pred = F.interpolate(obs_pred, (args.h, args.w), mode='bilinear', align_corners=False)
+
             obs_pred = Image.blend(transforms.ToPILImage()(img[0]), transforms.ToPILImage()(obs_pred[0]), alpha=0.9)
 
             # Concat and Save visualization
@@ -65,9 +83,9 @@ def test(args):
             res.paste(transforms.ToPILImage()(img[0]), (0, 0))
             res.paste(seg_pred, (args.w, 0))
             res.paste(obs_pred, (2 * args.w, 0))
-            res.save(f'./save_img/img_{i:03d}.png')
+            res.save(f'./save_img/{file.split("/")[-1]}')
 
-            print(f"Test: {i/len(args.imgs)*100:.1f} %")
+            print(f"Test: image: {i}, progression: {i/len(args.imgs)*100:.1f} %, img = {file.split('/')[-1]} ")
     print(f"Inference run time: {len(args.imgs)/total_time:.1f} FPS")
 
 
@@ -78,18 +96,17 @@ def _inference(img, segnet, obsnet):
 
 
 if __name__ == '__main__':
-    class Arguments:
-        def __init__(self):
-            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-            self.segnet_file = "/root/workspace/Projects/Stuff/Git_repo/Segmentation/ckpt/Bdd/DeepLabv3plus.pth"
-            self.obsnet_file = "./ckpt/BddAnomaly/best.pth"
-            self.imgs = glob.glob("/datasets_master/dataset_RoadAnomalyTrack/images/*")
-            self.data = "BddAnomaly"
-            self.model = "deeplabv3plus"
-            self.one = torch.FloatTensor([1.]).to(self.device)
-            self.zero = torch.FloatTensor([0.]).to(self.device)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--data",        type=str, default="", help="Type of dataset")
+    parser.add_argument("--model",       type=str, default="", help="Segnet|deeplabv3plus|road_anomaly")
+    parser.add_argument("--img_folder",  type=str, default="", help="path to image folder")
+    parser.add_argument("--segnet_file", type=str, default="", help="path to segnet")
+    parser.add_argument("--obsnet_file", type=str, default="", help="path to obsnet")
+    args = parser.parse_args()
 
-    args = Arguments()
+    args.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    args.one = torch.FloatTensor([1.]).to(args.device)
+    args.zero = torch.FloatTensor([0.]).to(args.device)
 
     if args.data == "CamVid":
         args.mean = [0.4108, 0.4240, 0.4316]
@@ -110,6 +127,8 @@ if __name__ == '__main__':
             [0, 128, 192],  # Bicyclist
             [0, 0, 0],  # Void
         ])
+
+        args.stuff_classes = [8, 9, 10]
 
     elif args.data == "BddAnomaly":
         args.mean = [0.3698, 0.4145, 0.4247]
@@ -137,10 +156,43 @@ if __name__ == '__main__':
             [0, 0, 230],  # motorcycle
             [119, 11, 32],  # bicycle
             [0, 0, 0]])  # unlabelled
+        args.stuff_classes = [11, 12, 13, 14, 15, 16, 17, 18, 19]
+
+    elif args.data == "CityScapes":
+        args.h, args.w = [512, 1024]   # original size [1024, 2048]
+        args.mean = (0.485, 0.456, 0.406)
+        args.std = (0.229, 0.224, 0.225)
+        args.nclass = 19
+        args.colors = np.array([[128, 64, 128],                     # 0: road
+                                [244, 35, 232],                     # 1: sidewalk
+                                [70, 70, 70],                       # 2: building
+                                [102, 102, 156],                    # 3: wall
+                                [190, 153, 153],                    # 4: fence
+                                [153, 153, 153],                    # 5: pole
+                                [250, 170, 30],                     # 6: traffic_light
+                                [220, 220, 0],                      # 7: traffic_sign
+                                [107, 142, 35],                     # 8: vegetation
+                                [152, 251, 152],                    # 9: terrain
+                                [0, 130, 180],                      # 10: sky
+                                [220, 20, 60],                      # 11: person
+                                [255, 0, 0],                        # 12: rider
+                                [0, 0, 142],                        # 13: car
+                                [0, 0, 70],                         # 14: truck
+                                [0, 60, 100],                       # 15: bus
+                                [0, 80, 100],                       # 16: train
+                                [0, 0, 230],                        # 17: motorcycle
+                                [119, 11, 32],                      # 18: bicycle
+                                [0, 0, 0]])                         # 19: unlabelled
+
+        args.stuff_classes = [11, 12, 13, 14, 15, 16, 17, 18, 19]
+
     else:
         raise NameError("Data not known")
+
+    args.imgs = glob.glob(args.img_folder + "*")
     args.cmap = dict(zip(range(len(args.colors)), args.colors))
     args.yellow = torch.FloatTensor([1, 1, 0]).to(args.device).view(1, 3, 1, 1).expand(1, 3, args.h, args.w)
     args.blue = torch.FloatTensor([0, 0, .4]).to(args.device).view(1, 3, 1, 1).expand(1, 3, args.h, args.w)
+
     test(args)
 

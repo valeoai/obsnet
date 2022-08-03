@@ -25,16 +25,18 @@ def main(args):
     writer.add_text("option", str(args), 0)
 
     # Load Dataset
-    train_loader, val_loader, test_loader = data_loader(args)
+    train_loader, val_loader, test_loader = data_loader(args.data, args)
+
     args.cmap = train_loader.dataset.cmap
     args.class_name = train_loader.dataset.class_name
-
+    args.colors = np.array(train_loader.dataset.colors)
     # Load Networks
     obsnet, segnet = net_loader(args)
     if args.optim == "SGD":
         optimizer = torch.optim.SGD(obsnet.parameters(), lr=args.lr)
     elif args.optim == "AdamW":
         optimizer = torch.optim.AdamW(obsnet.parameters(), lr=args.lr)
+
     sched = scheduler.MultiStepLR(optimizer, milestones=[args.epoch // 2, args.epoch-5], gamma=0.2)
 
     if args.test_only:
@@ -69,10 +71,9 @@ if __name__ == '__main__':
     parser.add_argument("--dset_folder",   type=str,   default="",       help="path to dataset")
     parser.add_argument("--segnet_file",   type=str,   default="",       help="path to segnet")
     parser.add_argument("--obsnet_file",   type=str,   default="",       help="path to obsnet")
+    parser.add_argument("--model",         type=str,   default="segnet", help="Segnet|Deeplabv3")
     parser.add_argument("--data",          type=str,   default="",       help="CamVid|StreetHazard|BddAnomaly")
     parser.add_argument("--tboard",        type=str,   default="",       help="path to tensorboeard log")
-    parser.add_argument("--model",         type=str,   default="segnet", help="Segnet|Deeplabv3")
-    parser.add_argument("--optim",         type=str,   default="SGD",    help="type of optimizer SGD|AdamW")
     parser.add_argument("--T",             type=int,   default=50,       help="number of forward pass for ensemble")
     parser.add_argument("--seed",          type=int,   default=-1,       help="seed, if -1 no seed is use")
     parser.add_argument("--bsize",         type=int,   default=8,        help="batch size")
@@ -85,6 +86,7 @@ if __name__ == '__main__':
     parser.add_argument("--num_workers",   type=int,   default=0,        help="number of workers")
     parser.add_argument("--num_nodes",     type=int,   default=1,        help="number of node")
     parser.add_argument("--adv",           type=str,   default="none",   help="type of adversarial attacks")
+    parser.add_argument("--optim",         type=str,   default="SGD",    help="type of optimizer SGD|AdamW")
     parser.add_argument("--test_multi",    type=str,   default="obsnet", help="test all baseline, split by comma")
     parser.add_argument("--drop",          action='store_true',          help="activate dropout in segnet")
     parser.add_argument("--no_img",        action='store_true',          help="use image for obsnet")
@@ -108,13 +110,13 @@ if __name__ == '__main__':
         args.std = [0.3066, 0.3111, 0.3068]
         args.nclass = 12
     elif args.data == "StreetHazard":
-        args.size = [720, 1280]
-        args.crop = (150, 250)
+        args.size = [360, 640]  # Original size [720, 1280]
+        args.crop = (80, 150)
         args.pos_weight = torch.tensor([3]).to(args.device)
         args.criterion = nn.BCEWithLogitsLoss(pos_weight=args.pos_weight)
         args.patch_size = [300, 360, 160, 200]
-        args.mean = [0.3301, 0.3457, 0.3728]
-        args.std = [0.1773, 0.1767, 0.1900]
+        args.mean = [0.485, 0.456, 0.406]
+        args.std = [0.229, 0.224, 0.225]
         args.nclass = 14
     elif args.data == "BddAnomaly":
         args.size = [360, 640]  # Original size [720, 1280]
@@ -143,6 +145,16 @@ if __name__ == '__main__':
         args.mean = [0.3213, 0.3335, 0.3400]
         args.std = [0.1368, 0.1376, 0.1419]
         args.nclass = 10
+    elif args.data == "CityScapes":
+        args.size = [512, 1024]
+        args.crop = (150, 250)
+        args.pos_weight = torch.tensor([3]).to(args.device)
+        args.criterion = nn.BCEWithLogitsLoss(pos_weight=args.pos_weight)
+        args.patch_size = [128, 128, 60, 80]
+        args.mean = [0.485, 0.456, 0.406]
+        args.std = [0.229, 0.224, 0.225]
+        args.nclass = 19
+        args.object_class = torch.LongTensor([12, 13, 14, 15, 16, 17, 18, 19]).to(args.device)
     else:
         raise NameError("Dataset not understand")
 
@@ -157,5 +169,9 @@ if __name__ == '__main__':
         random.seed(args.seed)
 
     args.test_multi = args.test_multi.split(",")
+
+    #### Fractal ####
+    if args.adv == "fractal":
+        args.fractal = iter(data_loader("Fractal", args))
 
     main(args)
