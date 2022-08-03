@@ -158,11 +158,6 @@ Example:
 
 | Model name                | OoD Data           | AUPR (&uarr;) | FPR95TPR (&darr;) | sIoU gt (&uarr;) | PPV (&uarr;) | mean F1 (&uarr;) |
 | --------------------------|------------------- | ------------- | ----------------- | ---------------- | ------------ | ---------------- |
-| DenseHybrid               | :heavy_check_mark: |   77.96%      |  9.81%            |  54.17%          |  24.13%      | 31.08%           |
-| Maximized Entropy         | :heavy_check_mark: |   85.47%      | 15.00%            |  49.21%          |  39.51%      | 28.72%           |
-| Void Classifier           | :heavy_check_mark: |   36.61%      | 63.49%            |  21.14%          |  22.13%      | 6.49%            |
-| SynBoost                  | :heavy_check_mark: |   56.44%      | 61.86%            |  34.68%          |  17.81%      | 9.99%            |
-|                           |                    |               |                   |                  |              |                  |
 | **ObsNet (OURS)**         | :x:                |   **75.44%**  | 26.69%            |  **44.22%**      | **52.56%**   | **45.08%**       |
 | NFlowJS                   | :x:                |   56.92%      | 34.71%            |  36.94%          |  18.01%      | 14.89%           |
 | JSRNet                    | :x:                |   33.64%      | 43.85%            |  20.20%          |  29.27%      | 13.66%           |
@@ -173,6 +168,11 @@ Example:
 | MC Dropout                | :x:                |   28.87%      | 69.47%            |  20.49%          |  17.26%      | 4.26%            |
 | Ensemble                  | :x:                |   17.66%      | 91.06%            |  16.44%          |  20.77%      | 3.39%            |
 | Mahalanobis               | :x:                |   20.04%      | 86.99%            |  14.82%          |  10.22%      | 2.68%            |
+| | | | | | | |
+| DenseHybrid               | :heavy_check_mark: |   77.96%      |  9.81%            |  54.17%          |  24.13%      | 31.08%           |
+| Maximized Entropy         | :heavy_check_mark: |   85.47%      | 15.00%            |  49.21%          |  39.51%      | 28.72%           |
+| Void Classifier           | :heavy_check_mark: |   36.61%      | 63.49%            |  21.14%          |  22.13%      | 6.49%            |
+| SynBoost                  | :heavy_check_mark: |   56.44%      | 61.86%            |  34.68%          |  17.81%      | 9.99%            |
 
 Sample of our results: 
 
