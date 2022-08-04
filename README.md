@@ -154,24 +154,25 @@ Example:
 
     python inference.py --img_folder "<path to image folder>" --segnet_file "path to segnet" --obsnet_file "path to obsnet" --data "CityScapes" --model "raod_anomaly"    
 
-## Road Anomaly Segmentation 
+## Road Anomaly Segmentation (SegmentMeIfYouCan)
 
-| Model name                | OoD Data           | AUPR     | FPR95TPR | sIoU gt | PPV     | mean F1 |
-| --------------------------|------------------- | -------- | ---------| ------- | ------- | ------- | 
-| ObsNet                    | :x:                |   75.44% | 26.69%   |  44.22% |  52.56% | 45.08%  |
-| DenseHybrid               | :heavy_check_mark: |   77.96% |  9.81%   |  54.17% |  24.13% | 31.08%  |
-| Maximized Entropy         | :heavy_check_mark: |   85.47% | 15.00%   |  49.21% |  39.51% | 28.72%  |
-| NFlowJS                   | :x:                |   56.92% | 34.71%   |  36.94% |  18.01% | 14.89%  |
-| JSRNet                    | :x:                |   33.64% | 43.85%   |  20.20% |  29.27% | 13.66%  |
-| Image Resynthesis         | :x:                |   52.28% | 25.93%   |  39.68% |  10.95% | 12.51%  |
-| SynBoost                  | :heavy_check_mark: |   56.44% | 61.86%   |  34.68% |  17.81% | 9.99%   |
-| Embedding Density         | :x:                |   37.52% | 70.76%   |  33.86% |  20.54% | 7.90%   |
-| Void Classifier           | :heavy_check_mark: |   36.61% | 63.49%   |  21.14% |  22.13% | 6.49%   |
-| Maximum Softmax           | :x:                |   27.97% | 72.05%   |  15.48% |  15.29% | 5.37%   |
-| ODIN                      | :x:                |   33.06% | 71.68%   |  19.53% |  17.88% | 5.15%   |
-| MC Dropout                | :x:                |   28.87% | 69.47%   |  20.49% |  17.26% | 4.26%   |
-| Ensemble                  | :x:                |   17.66% | 91.06%   |  16.44% |  20.77% | 3.39%   |
-| Mahalanobis               | :x:                |   20.04% | 86.99%   |  14.82% |  10.22% | 2.68%   |
+| Model name                | Train w/ OoD       |  AUPR (&uarr;)  |  FPR95TPR (&darr;)  |  sIoU gt (&uarr;)  |  PPV (&uarr;)  |  mean F1 (&uarr;)  |
+| --------------------------|:-----------------: | :-------------: | :-----------------: | :----------------: | :------------: | :----------------: |
+| **ObsNet (OURS)**         |        :x:         |   **75.44%**  | 26.69%            |  **44.22%**      | **52.56%**   | **45.08%**       |
+| NFlowJS                   |        :x:         |   56.92%      | 34.71%            |  36.94%          |  18.01%      | 14.89%           |
+| JSRNet                    |        :x:         |   33.64%      | 43.85%            |  20.20%          |  29.27%      | 13.66%           |
+| Image Resynthesis         |        :x:         |   52.28%      | **25.93%**        |  39.68%          |  10.95%      | 12.51%           |
+| Embedding Density         |        :x:         |   37.52%      | 70.76%            |  33.86%          |  20.54%      | 7.90%            |
+| Maximum Softmax           |        :x:         |   27.97%      | 72.05%            |  15.48%          |  15.29%      | 5.37%            |
+| ODIN                      |        :x:         |   33.06%      | 71.68%            |  19.53%          |  17.88%      | 5.15%            |
+| MC Dropout                |        :x:         |   28.87%      | 69.47%            |  20.49%          |  17.26%      | 4.26%            |
+| Ensemble                  |        :x:         |   17.66%      | 91.06%            |  16.44%          |  20.77%      | 3.39%            |
+| Mahalanobis               |        :x:         |   20.04%      | 86.99%            |  14.82%          |  10.22%      | 2.68%            |
+| | | | | | | |
+| DenseHybrid               | :heavy_check_mark: |   77.96%      |  9.81%            |  54.17%          |  24.13%      | 31.08%           |
+| Maximized Entropy         | :heavy_check_mark: |   85.47%      | 15.00%            |  49.21%          |  39.51%      | 28.72%           |
+| Void Classifier           | :heavy_check_mark: |   36.61%      | 63.49%            |  21.14%          |  22.13%      | 6.49%            |
+| SynBoost                  | :heavy_check_mark: |   56.44%      | 61.86%            |  34.68%          |  17.81%      | 9.99%            |
 
 Sample of our results: 
 
