@@ -323,7 +323,7 @@ class DeepWV3Plus_Obsnet(nn.Module):
 
         initialize_weights(self.final)
 
-    def forward(self, inp, feats):
+    def forward(self, inp, feats, *args, **kargs):
         x_size = inp.size()
         x = self.mod1(inp)
         m2 = self.mod2(self.pool2(x))   + feats[0]
